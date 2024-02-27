@@ -34,9 +34,9 @@ stages:
         command: 'restore'
         projects: '**/*.csproj'
 
-    - template: templates/build.yml
-      parameters:
-        buildConfiguration: 'Debug'
+    # - template: templates/build.yml
+    #   parameters:
+    #     buildConfiguration: 'Debug'
 
     - template: templates/build.yml
       parameters:
@@ -45,25 +45,25 @@ stages:
     - publish: '$(Build.ArtifactStagingDirectory)'
       artifact: drop
 
-# steps:
-# - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
-#   displayName: 'Write build info'
-#   workingDirectory: CanvasAssistantWASM/wwwroot
-
-# - task: DotNetCoreCLI@2
-#   displayName: 'Restore project dependencies'
-#   inputs:
-#     command: 'restore'
-#     projects: '**/*.csproj'
-
-# - template: templates/build.yml
-#   parameters:
-#     buildConfiguration: 'Debug'
-
-# - template: templates/build.yml
-#   parameters:
-#     buildConfiguration: 'Release'
-
-# - task: PublishBuildArtifacts@1
-#   displayName: 'Publish Artifact: drop'
-#   condition: succeeded()
+- stage: 'Deploy'
+  displayName: 'Deploy the web application'
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: dev
+    variables:
+    - group: Release
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+          - task: AzureWebApp@1
+            displayName: 'Azure App Service Deploy: website'
+            inputs:
+              azureSubscription: 'Resource Manager - Canvas Assistant Blazor WASM'
+              appName: '$(WebAppName)'
+              package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
