@@ -1,0 +1,44 @@
+﻿@page "/api/auth/callback/Canvas"
+@*This is the callback page after Canvas Authentication*@
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@using System.Text.Json
+@using TokenTestingBlazor.Client.Models
+
+@inject HttpClient client
+@inject CookieStorageAccessor cookie
+@inject CanvasAuthAccessor canvasAuth
+@inject NavigationManager Nav
+
+@Response
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "code")]
+    public string? AuthCode { get; set; }
+
+    public string? Response { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthCode != null)
+        {
+            try
+            {
+                var Token = await canvasAuth.GetAccessTokenAsync(AuthCode);
+
+                await cookie.SetValueAsync<string>("canvas_access_token", Token.access_token, Token.expires_in); 
+                await cookie.SetValueAsync<string>("canvas_refresh_token", Token.refresh_token, Int32.MaxValue);
+                Nav.NavigateTo("/");
+            }
+            catch (Exception ex)
+            {
+                Response = ex.Message;
+            }
+        }
+        else
+        {
+            Response = "This page has been accessed in error!";
+        }
+    }
+}

@@ -1,0 +1,36 @@
+﻿@page "/logout"
+@*Logs a user out*@
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject CookieStorageAccessor cookie
+@inject NavigationManager Nav
+@inject CanvasAuthAccessor canvasAuth
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        string? canvasToken = await cookie.GetValueAsync<string>("canvas_access_token");
+        if (canvasToken != null)
+        {
+            await canvasAuth.CanvasLogout(canvasToken);
+            await cookie.DeleteValueAsync("canvas_access_token");
+            await cookie.DeleteValueAsync("canvas_refresh_token");
+        }
+        else
+        {
+            string? canvasRefreshToken = await cookie.GetValueAsync<string>("canvas_refresh_token");
+            if (canvasRefreshToken != null)
+            {
+                var Token = await canvasAuth.RefreshAccessTokenAsync(canvasRefreshToken);
+
+                await canvasAuth.CanvasLogout(Token.access_token);
+                await cookie.DeleteValueAsync("canvas_refresh_token");
+            }
+        }
+        await cookie.DeleteValueAsync("azure_access_token");
+        await cookie.DeleteValueAsync("azure_refresh_token");
+
+        Nav.NavigateTo("/");
+
+    }
+}

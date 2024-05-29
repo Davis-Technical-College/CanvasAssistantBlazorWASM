@@ -1,0 +1,28 @@
+﻿@page "/login"
+@*Automatically begins the Authentication process*@
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject AzureOAuth auth
+@inject CookieStorageAccessor cookie
+@inject NavigationManager Nav
+
+@code {
+
+    public async void GetToken()
+    {
+        string? Token = await cookie.GetValueAsync<string>("azure_access_token");
+        if (Token == null)
+        {
+            auth.GetAuthCode(Nav);
+        }
+        else
+        {
+            Nav.NavigateTo("/api/auth/callback/Azure");
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        GetToken();
+    }
+}

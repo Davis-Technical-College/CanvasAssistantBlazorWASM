@@ -1,0 +1,14 @@
+﻿@page "/"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@*Home page, uses the LoginHeader component to show the login bar*@
+<PageTitle>Home</PageTitle>
+
+<TokenTestingBlazor.Client.Components.LoginHeader>
+
+<h1 class="test">Hello, world!</h1>
+
+Welcome to your new app.
+
+
+</TokenTestingBlazor.Client.Components.LoginHeader>

@@ -1,0 +1,100 @@
+﻿@page "/api/auth/callback/Azure"
+@*This page is the callback page after Azure Authentication*@
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@using TokenTestingBlazor.Client.Models
+
+@inject AzureOAuth auth
+@inject CookieStorageAccessor cookie
+@inject NavigationManager Nav
+@inject IConfiguration Config
+@inject CanvasAuthAccessor canvasAuthAPI
+
+
+@code {
+
+    public TokenDTO? Token { get; set; }
+
+    /// <summary>
+    /// Supplied by the Microsoft Callback - Contains the Authorization Code that can be exchanged for the Access Token
+    /// </summary>
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "code")]
+    public string? AuthCode { get; set; }
+
+    /// <summary>
+    /// Supplied by the Microsoft Callback - Contains the verification of the PCKE used in the authorization call 
+    /// </summary>
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "state")]
+    public string? ResponseState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthCode != null && ResponseState != null)
+        {
+            try 
+            {
+                Token = await auth.GetAccessToken(AuthCode, ResponseState);
+
+                if (Token.access_token != null && Token.refresh_token != null && Token.expires_in != null)
+                {
+                    await cookie.SetValueAsync<string>("azure_access_token", Token.access_token, Token.expires_in);
+                    await cookie.SetValueAsync<string>("azure_refresh_token", Token.refresh_token, (24 * 60 * 60));
+                    CheckCanvasAuthStatus();
+                }
+            } 
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        } 
+        else
+        {
+            Console.WriteLine("Auth Code or Response State is Null!");
+            string? azureToken = await cookie.GetValueAsync<string>("azure_access_token");
+            if (!string.IsNullOrEmpty(azureToken))
+            {
+                CheckCanvasAuthStatus();
+            }
+        }
+    }
+
+    public async void CheckCanvasAuthStatus()
+    {
+        string? accessToken = await cookie.GetValueAsync<string>("canvas_access_token");
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            string? refreshToken = await cookie.GetValueAsync<string>("canvas_refresh_token");
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                BeginCanvasOAuth();
+            }
+            else
+            {
+                var Token = await canvasAuthAPI.RefreshAccessTokenAsync(refreshToken);
+                await cookie.SetValueAsync<string>("canvas_access_token", Token.access_token, Token.expires_in);
+                Nav.NavigateTo("/");
+            }
+        }
+        else
+        {
+            Nav.NavigateTo("/");
+        }
+    }
+
+    public void BeginCanvasOAuth()
+    {
+        string redirectURI = Config["Canvas:redirect_uri"] ?? throw new ArgumentNullException(nameof(redirectURI));
+        string endpoint = Config["Canvas:auth_uri"] ?? throw new ArgumentNullException(nameof(endpoint));
+        string oAuthClientID = Config["Canvas:client_id"] ?? throw new ArgumentNullException(nameof(oAuthClientID));
+
+        endpoint += "auth?";
+        endpoint += $"client_id={oAuthClientID}";
+        endpoint += "&response_type=code";
+        endpoint += $"&redirect_uri={redirectURI}";
+
+        Nav.NavigateTo(endpoint);
+    }
+
+}

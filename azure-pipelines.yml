@@ -22,7 +22,7 @@ steps:
     restoreSolution: '$(solution)'
 - task: FileTransform@1
   inputs:
-    folderPath: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    folderPath: '$(System.DefaultWorkingDirectory)'
     fileType: 'json'
     targetFiles: '**\*.Production.json'
 - task: VSBuild@1

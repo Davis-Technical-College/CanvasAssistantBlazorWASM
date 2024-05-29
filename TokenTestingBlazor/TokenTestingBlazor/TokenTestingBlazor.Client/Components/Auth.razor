@@ -1,0 +1,80 @@
+﻿@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@*Wrap this component around a page to redirect the user if they aren't logged in, ensuring that in typical use, if a user is accessing said page, they are logged in*@
+
+@inject CookieStorageAccessor cookie
+@inject NavigationManager Nav
+@inject HttpClient client
+@inject AzureOAuth azureAuth
+@inject CanvasAuthAccessor canvasAuthAPI
+
+@using System.Text.Json
+@using TokenTestingBlazor.Client.Models
+
+<LoginHeader>
+
+@if (AzureAuth && CanvasAuth)
+{
+    @ChildContent
+} 
+else
+{
+    <p>Loading...</p>
+}
+
+</LoginHeader>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public bool AzureAuth { get; set; } = false;
+    public bool CanvasAuth { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string? azureToken = await cookie.GetValueAsync<string>("azure_access_token");
+        if (string.IsNullOrEmpty(azureToken))
+        {
+            string? azureRefreshToken = await cookie.GetValueAsync<string>("azure_refresh_token");
+            if (string.IsNullOrEmpty(azureRefreshToken))
+            {
+                Nav.NavigateTo("/login"); //There is no Azure Access or refresh token, thus begin login attempt
+            }
+            else
+            {
+                var azureTokenDTO = await azureAuth.RefreshAccessToken(azureRefreshToken);
+                if (!string.IsNullOrEmpty(azureTokenDTO.access_token))
+                {
+                    await cookie.SetValueAsync<string>("azure_access_token", azureTokenDTO.access_token, azureTokenDTO.expires_in);
+                    AzureAuth = true;
+                    azureToken = azureTokenDTO.access_token;
+                }
+            }
+        } 
+        else
+        {
+            AzureAuth = true;
+        }
+
+        string? canvasToken = await cookie.GetValueAsync<string>("canvas_access_token");
+        if (string.IsNullOrEmpty(canvasToken))
+        {
+            string? canvasRefreshToken = await cookie.GetValueAsync<string>("canvas_refresh_token");
+            if (string.IsNullOrEmpty(canvasRefreshToken))
+            {
+                Nav.NavigateTo("/login");
+            } 
+            else
+            {
+                var Token = await canvasAuthAPI.RefreshAccessTokenAsync(canvasRefreshToken);
+                await cookie.SetValueAsync<string>("canvas_access_token", Token.access_token, Token.expires_in);
+                CanvasAuth = true;
+            }
+        }
+        else
+        {
+            CanvasAuth = true;
+        }
+    }
+}
