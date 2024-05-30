@@ -33,6 +33,8 @@ If a page doesn't use the `<Auth />` component, make sure to use the `<LoginHead
 
 To get this project working see [Azure Setup](AzureSetup.md) and [Project Configuration](Configuration.md)
 
+##Public Website
+https://canvas-assistant-blazor-wasm.azurewebsites.net/
 
 ## Contribution
 
