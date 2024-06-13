@@ -5,6 +5,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddSingleton<CookieStorageAccessor>();
 builder.Services.AddSingleton<CanvasAuthAccessor>();
+builder.Services.AddSingleton<CanvasProfileAccessor>();
 builder.Services.AddSingleton<AzureOAuth>();
 builder.Services.AddScoped<HttpClient>();
 

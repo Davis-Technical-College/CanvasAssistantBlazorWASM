@@ -7,6 +7,6 @@
         public string refresh_token { get; set; }
         public int expires_in { get; set; }
         public string canvas_region { get; set; }
-        public CanvasUserDTO user { get; set; }
+        public CanvasProfileDTO user { get; set; }
     }
 }

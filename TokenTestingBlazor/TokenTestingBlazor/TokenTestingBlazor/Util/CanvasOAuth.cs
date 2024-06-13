@@ -5,7 +5,7 @@ using System.Text.Json;
 using TokenTestingBlazor.Client.Models;
 using TokenTestingBlazor.Models;
 
-namespace TokenTestingBlazor
+namespace TokenTestingBlazor.Util
 {
     /// <summary>
     /// Utility Class for getting canvas OAuth tokens
