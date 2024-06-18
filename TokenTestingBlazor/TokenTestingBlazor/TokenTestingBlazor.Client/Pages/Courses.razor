@@ -1,5 +1,9 @@
 ﻿@page "/courses"
+@using TokenTestingBlazor.Client.Models
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject CookieStorageAccessor cookies
+@inject CanvasCourseAccessor coursesAPI
 
 <PageTitle>Courses</PageTitle>
 
@@ -7,10 +11,68 @@
 
     <h3>Courses</h3>
 
-    <p>Coming soon...</p>
+    @if (loading)
+    {
+        <p>Loading...</p>
+    }
+    else if (courseList is null)
+    {
+        <p>Nothing to display...</p>
+    }
+    else
+    {
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (CanvasCourseDTO course in courseList)
+                    {
+                        <tr>
+                            <td>@course.name</td>
+                            <td>@course.id</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 
 </TokenTestingBlazor.Client.Components.LoginHeader>
 
 @code {
+    private bool loading = false;
+    private string? token;
+    private List<CanvasCourseDTO>? courseList;
 
+    private async Task FetchAllCourses()
+    {
+        token = await cookies.GetValueAsync<string>("canvas_access_token");
+
+        if (token is null)
+        {
+            return;
+        }
+        else
+        {
+            try
+            {
+                courseList = await coursesAPI.FetchAllCourses(token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchAllCourses();
+        loading = false;
+    }
 }

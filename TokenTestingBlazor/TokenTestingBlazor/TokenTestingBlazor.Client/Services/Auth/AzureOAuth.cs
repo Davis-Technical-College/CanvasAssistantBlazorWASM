@@ -25,7 +25,7 @@ namespace TokenTestingBlazor.Client
         /// The Application (client) ID of the registered Entra ID application
         /// </summary>
         private static string client_id;
-        
+
         /// <summary>
         /// The URI redirected to after authentication
         /// </summary>
@@ -36,10 +36,10 @@ namespace TokenTestingBlazor.Client
         /// </summary>
         private static string cosmosURI;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        
+
         private HttpClient client;
 
-        public AzureOAuth(IConfiguration Config) 
+        public AzureOAuth(IConfiguration Config)
         {
             client = new HttpClient();
             tenant = Config["Azure:tenant"] ?? throw new ArgumentNullException();
@@ -56,7 +56,7 @@ namespace TokenTestingBlazor.Client
         public void GetAuthCode(NavigationManager navigationManager)
         {
             var (challenge, verify) = Generate();
-            
+
 
             var endpoint = $"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize?";
             endpoint += $"client_id={client_id}";
@@ -89,14 +89,14 @@ namespace TokenTestingBlazor.Client
                 { "code_verifier", state },
                 { "grant_type", "authorization_code" },
             };
-            
+
             var requestContent = new FormUrlEncodedContent(values);
 
             var response = await client.PostAsync(endpoint.ToString(), requestContent);
             response.EnsureSuccessStatusCode();
 
             return JsonSerializer.Deserialize<TokenDTO>(response.Content.ReadAsStream());
-            
+
         }
 
         public async Task<TokenDTO> RefreshAccessToken(string refreshToken)

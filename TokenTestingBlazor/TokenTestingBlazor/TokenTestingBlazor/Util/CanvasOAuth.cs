@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Text.Json;
-using TokenTestingBlazor.Client.Models;
+﻿using System.Text.Json;
 using TokenTestingBlazor.Models;
 
 namespace TokenTestingBlazor.Util
@@ -14,19 +10,19 @@ namespace TokenTestingBlazor.Util
     public class CanvasOAuth
     {
         //Values from appsettings.json
-        private readonly string oAuthClientID;
-        private readonly string oAuthClientSecret;
-        private readonly string redirectURI;
-        private readonly string tokenURI;
+        private readonly string _oAuthClientID;
+        private readonly string _oAuthClientSecret;
+        private readonly string _redirectURI;
+        private readonly string _tokenURI;
 
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
         public CanvasOAuth(IConfiguration Config)
         {
-            client = new HttpClient();
-            oAuthClientID = Config["Canvas:client_id"] ?? throw new ArgumentNullException(nameof(oAuthClientID));
-            oAuthClientSecret = Config["Canvas:client_secret"] ?? throw new ArgumentNullException(nameof(oAuthClientSecret));
-            redirectURI = Config["Canvas:redirect_uri"] ?? throw new ArgumentNullException(nameof(redirectURI));
-            tokenURI = Config["Canvas:token_uri"] ?? throw new ArgumentNullException(nameof(tokenURI));
+            _client = new HttpClient();
+            _oAuthClientID = Config["Canvas:client_id"] ?? throw new ArgumentNullException(nameof(_oAuthClientID));
+            _oAuthClientSecret = Config["Canvas:client_secret"] ?? throw new ArgumentNullException(nameof(_oAuthClientSecret));
+            _redirectURI = Config["Canvas:redirect_uri"] ?? throw new ArgumentNullException(nameof(_redirectURI));
+            _tokenURI = Config["Canvas:token_uri"] ?? throw new ArgumentNullException(nameof(_tokenURI));
         }
 
         /// <summary>
@@ -36,20 +32,20 @@ namespace TokenTestingBlazor.Util
         /// <returns>A DTO containing the Canvas Access Token</returns>
         public async Task<ServerCanvasTokenDTO> GetCanvasTokenAsync(string authCode)
         {
-            var endpoint = new Uri(tokenURI);
+            var endpoint = new Uri(_tokenURI);
 
             var values = new Dictionary<string, string>
             {
                 { "grant_type", "authorization_code" },
-                { "client_id", oAuthClientID },
-                { "client_secret", oAuthClientSecret },
-                { "redirect_uri", redirectURI },
-                {"code", authCode },
+                { "client_id", _oAuthClientID },
+                { "client_secret", _oAuthClientSecret },
+                { "redirect_uri", _redirectURI },
+                { "code", authCode },
             };
 
             var requestContent = new FormUrlEncodedContent(values);
 
-            var response = await client.PostAsync(endpoint.ToString(), requestContent);
+            var response = await _client.PostAsync(endpoint.ToString(), requestContent);
             response.EnsureSuccessStatusCode();
 
 
@@ -64,20 +60,20 @@ namespace TokenTestingBlazor.Util
         /// <returns></returns>
         public async Task<ServerCanvasRefreshDTO> RefreshCanvasTokenAsync(string refreshToken)
         {
-            var endpoint = new Uri(tokenURI);
+            var endpoint = new Uri(_tokenURI);
 
             var values = new Dictionary<string, string>()
             {
-                {"grant_type", "refresh_token" },
-                {"client_id", oAuthClientID },
-                { "client_secret", oAuthClientSecret },
-                { "redirect_uri", redirectURI },
+                { "grant_type", "refresh_token" },
+                { "client_id", _oAuthClientID },
+                { "client_secret", _oAuthClientSecret },
+                { "redirect_uri", _redirectURI },
                 { "refresh_token", refreshToken },
             };
 
             var requestContent = new FormUrlEncodedContent(values);
 
-            var response = await client.PostAsync(endpoint.ToString(), requestContent);
+            var response = await _client.PostAsync(endpoint.ToString(), requestContent);
             response.EnsureSuccessStatusCode();
 
             return JsonSerializer.Deserialize<ServerCanvasRefreshDTO>(response.Content.ReadAsStream());
@@ -90,9 +86,9 @@ namespace TokenTestingBlazor.Util
         /// <returns>A boolean indicating if the user was successfully logged out</returns>
         public async Task<bool> CanvasLogout(string AccessToken)
         {
-            var endpoint = tokenURI + "?access_token=" + AccessToken;
+            var endpoint = _tokenURI + "?access_token=" + AccessToken;
 
-            var response = await client.DeleteAsync(endpoint);
+            var response = await _client.DeleteAsync(endpoint);
 
             return response.IsSuccessStatusCode;
         }
