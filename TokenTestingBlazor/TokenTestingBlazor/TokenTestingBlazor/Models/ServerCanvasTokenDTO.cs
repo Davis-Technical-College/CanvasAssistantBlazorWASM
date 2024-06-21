@@ -11,7 +11,7 @@
         public string refresh_token { get; set; }
         public int expires_in { get; set; }
         public string canvas_region { get; set; }
-        public ServerCanvasProfileDTO user { get; set; }
+        //public ServerCanvasUserDTO user { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     }
 }

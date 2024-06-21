@@ -26,7 +26,7 @@ namespace TokenTestingBlazor.Util
         }
 
         /// <summary>
-        /// Exchanges the Auth code for the Canvas access token, getting the client secret from the CosmosDB instance
+        /// Exchanges the Auth code for the Canvas access token
         /// </summary>
         /// <param name="authCode">Authorization Code from canvas</param>
         /// <returns>A DTO containing the Canvas Access Token</returns>
@@ -56,8 +56,8 @@ namespace TokenTestingBlazor.Util
         /// <summary>
         /// Refreshes the Canvas Access Token
         /// </summary>
-        /// <param name="refreshToken"></param>
-        /// <returns></returns>
+        /// <param name="refreshToken">Canvas refresh token</param>
+        /// <returns>Canvas refresh token</returns>
         public async Task<ServerCanvasRefreshDTO> RefreshCanvasTokenAsync(string refreshToken)
         {
             var endpoint = new Uri(_tokenURI);

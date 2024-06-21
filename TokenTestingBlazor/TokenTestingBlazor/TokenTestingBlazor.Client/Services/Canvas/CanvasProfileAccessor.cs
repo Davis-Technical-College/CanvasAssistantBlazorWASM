@@ -5,6 +5,9 @@ using TokenTestingBlazor.Client.Models;
 
 namespace TokenTestingBlazor.Client
 {
+    /// <summary>
+    /// Utility class for fetching Canvas profile data from the server API.
+    /// </summary>
     public class CanvasProfileAccessor
     {
         private HttpClient _client;
@@ -16,9 +19,14 @@ namespace TokenTestingBlazor.Client
             domain = Config["Domain"] ?? throw new ArgumentNullException($"{nameof(domain)}");
         }
 
+        /// <summary>
+        /// Fetches the user profile from the server API.
+        /// </summary>
+        /// <param name="token">Canvas access token</param>
+        /// <returns>Canvas user profile</returns>
         public async Task<CanvasProfileDTO> GetCanvasProfileAsync(string token)
         {
-            var apiEndpoint = domain + "/api/profile/getProfile";
+            var apiEndpoint = domain + "/api/profile";
 
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("token", token);

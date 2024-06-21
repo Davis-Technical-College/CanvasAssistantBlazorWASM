@@ -4,12 +4,13 @@
 
 @inject CookieStorageAccessor cookies
 @inject CanvasCourseAccessor coursesAPI
+@inject CourseSelector courseSelector
 
 <PageTitle>Courses</PageTitle>
 
 <TokenTestingBlazor.Client.Components.LoginHeader>
 
-    <h3>Courses</h3>
+    <h3>All Courses</h3>
 
     @if (loading)
     {
@@ -21,24 +22,65 @@
     }
     else
     {
-        <div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Id</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (CanvasCourseDTO course in courseList)
-                    {
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <p>Selected Course</p>
+                    <p>@selectionName</p>
+                </div>
+            </div>
+
+            <div>
+                <h4>All Courses</h4>
+            </div>
+            @if (courseList is not null)
+            {
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>@course.name</td>
-                            <td>@course.id</td>
+                            <th>Course Name</th>
+                            <th>Course Id</th>
+                            <th>Workflow State</th>
+                            <th>Total Students</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (CanvasCourseDTO course in courseList)
+                        {
+                            <tr @onclick="() => SetCourseSelection(course.id, course.name)">
+                                <td>@course.name</td>
+                                <td>@course.id</td>
+                                <td>@course.workflow_state</td>
+                                <td>@course.total_students</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+            <div>
+                <h4>Students in Course</h4>
+            </div>
+            @if (studentList is not null)
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Student Id</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (CanvasStudentDTO student in studentList)
+                        {
+                            <tr>
+                                <td>@student.name</td>
+                                <td>@student.student_id</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
     }
 
@@ -48,6 +90,17 @@
     private bool loading = false;
     private string? token;
     private List<CanvasCourseDTO>? courseList;
+    private int? selectionId;
+    private string? selectionName;
+
+    private List<CanvasStudentDTO>? studentList;
+
+    private void SetCourseSelection(int id, string name)
+    {
+        selectionId = id;
+        selectionName = name;
+        courseSelector.SetSelection(id, name);
+    }
 
     private async Task FetchAllCourses()
     {
@@ -70,9 +123,35 @@
         }
     }
 
+    private async Task FetchStudents(int id)
+    {
+        token = await cookies.GetValueAsync<string>("canvas_access_token");
+
+        if (token is null)
+        {
+            return;
+        }
+        else
+        {
+            try
+            {
+                studentList = await coursesAPI.FetchStudentsInCourse(token, id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
+        (selectionId, selectionName) = courseSelector.GetSelection();
         await FetchAllCourses();
+        if (selectionId is not null)
+        {
+            await FetchStudents((int)selectionId);
+        }
         loading = false;
     }
 }
