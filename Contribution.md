@@ -4,7 +4,7 @@ This page contains details on how to add new pages to the project, as well as sp
 
 ## The design philosophy
 
-This project is designed to have as lean of a server as possible, meaning if it can be done on the client, it should be.
+This project is designed to have as lean of a server as possible, meaning if it can be done on the client, it should be. Due to restrictions in the Canvas API we are forced (or so we believe) to make Canvas API calls from the server.
 
 ## Adding pages
 

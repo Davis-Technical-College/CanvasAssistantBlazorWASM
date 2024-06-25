@@ -1,6 +1,6 @@
 ﻿namespace TokenTestingBlazor.Client.Models
 {
-    public class CanvasProfileDTO
+    public class CanvasProfile
     {
         public int id { get; set; }
         public string login_id { get; set; }

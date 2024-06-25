@@ -1,0 +1,111 @@
+﻿@page "/modules"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject CookieStorageAccessor cookies
+@inject CanvasCourseAccessor coursesAPI
+@inject CourseSelector courseSelector
+
+
+<TokenTestingBlazor.Client.Components.LoginHeader>
+
+    <div class="p-4">
+        <h3>Modules</h3>
+    </div>
+
+    @if (token is null)
+    {
+        <div>
+            <p>You must be logged in to access this page.</p>
+        </div>
+    }
+    else
+    {
+        <div class="container-fluid">
+            <div class="row my-4">
+                <div class="col">
+                    <label for="selectedCourse" class="form-label">Selected Course</label>
+                    <input type="text" class="form-control" id="selectedCourse" disabled @bind="selectionName" />
+                </div>
+                <div class="col pt-4">
+                    <button class="btn btn-outline-dark" @onclick="ShowAllModulesHandler">Show All Modules</button>
+                </div>
+            </div>
+
+            <div class="my-4">
+                <h4>All Modules</h4>
+            </div>
+            @if (loadingModules)
+            {
+                <div>
+                    <p>Loading...</p>
+                </div>
+            }
+            else if (moduleList is not null)
+            {
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Module Position</th>
+                            <th>Module Id</th>
+                            <th>Module Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (CanvasCourseModule module in moduleList)
+                        {
+                            <tr>
+                                <td>@module.position</td>
+                                <td>@module.id</td>
+                                <td>@module.name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div>
+                    <p>Nothing to show</p>
+                </div>
+            }
+        </div>
+    }
+
+</TokenTestingBlazor.Client.Components.LoginHeader>
+
+@code {
+    private string? token = null;
+    private int? selectionId = null;
+    private string? selectionName = null;
+
+    private bool loadingModules = false;
+    private List<CanvasCourseModule>? moduleList = null;
+
+    private async Task ShowAllModulesHandler()
+    {
+        if (token is not null && selectionId is not null)
+        {
+            loadingModules = true;
+            try
+            {
+                moduleList = await coursesAPI.FetchModulesForCourse(token, (int)selectionId);
+                loadingModules = false;
+            }
+            catch (Exception ex)
+            {
+                loadingModules = false;
+                Console.WriteLine(ex.Message);
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await cookies.GetValueAsync<string>("canvas_access_token");
+
+        if (token is not null)
+        {
+            (selectionId, selectionName) = courseSelector.GetSelection();
+        }
+    }
+}

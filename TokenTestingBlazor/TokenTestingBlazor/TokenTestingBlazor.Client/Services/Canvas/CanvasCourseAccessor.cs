@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
 using TokenTestingBlazor.Client.Models;
 
 namespace TokenTestingBlazor.Client
@@ -22,16 +23,16 @@ namespace TokenTestingBlazor.Client
         /// </summary>
         /// <param name="token">Canvas access token</param>
         /// <returns>List of Canvas courses</returns>
-        public async Task<List<CanvasCourseDTO>> FetchAllCourses(string token)
+        public async Task<List<CanvasCourse>> FetchAllCourses(string token)
         {
-            var apiEndpoint = domain + "/api/courses";
+            Uri apiEndpoint = new Uri(domain + "/api/courses");
 
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("token", token);
 
-            var response = await _client.GetAsync(apiEndpoint);
+            HttpResponseMessage response = await _client.GetAsync(apiEndpoint);
 
-            return JsonSerializer.Deserialize<List<CanvasCourseDTO>>(response.Content.ReadAsStream());
+            return JsonSerializer.Deserialize<List<CanvasCourse>>(response.Content.ReadAsStream());
         }
 
         /// <summary>
@@ -40,16 +41,52 @@ namespace TokenTestingBlazor.Client
         /// <param name="token">Canvas access token</param>
         /// <param name="id">Canvas course id</param>
         /// <returns>List of students</returns>
-        public async Task<List<CanvasStudentDTO>> FetchStudentsInCourse(string token, int id)
+        public async Task<List<CanvasStudent>> FetchStudentsInCourse(string token, int id)
         {
-            var endpoint = domain + $"/api/courses/{id}/students";
+            Uri endpoint = new Uri(domain + $"/api/courses/{id}/students");
 
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("token", token);
 
-            var response = await _client.GetAsync(endpoint);
+            HttpResponseMessage response = await _client.GetAsync(endpoint);
 
-            return JsonSerializer.Deserialize<List<CanvasStudentDTO>>(response.Content.ReadAsStream());
+            return JsonSerializer.Deserialize<List<CanvasStudent>>(response.Content.ReadAsStream());
+        }
+
+        /// <summary>
+        /// Fetches all assignments for a course.
+        /// </summary>
+        /// <param name="token">Canvas access token</param>
+        /// <param name="id">Canvas course id</param>
+        /// <returns>List of Canvas assignments</returns>
+        public async Task<List<CanvasAssignment>> FetchAssignmentsForCourse(string token, int id)
+        {
+            Uri endpoint = new Uri(domain + $"/api/courses/{id}/assignments");
+
+            _client.DefaultRequestHeaders.Clear();
+            _client.DefaultRequestHeaders.Add("token", token);
+
+            HttpResponseMessage response = await _client.GetAsync(endpoint);
+
+            return JsonSerializer.Deserialize<List<CanvasAssignment>>(response.Content.ReadAsStream());
+        }
+
+        /// <summary>
+        /// Fetches all modules for a course.
+        /// </summary>
+        /// <param name="token">Canvas access token</param>
+        /// <param name="id">Canvas course id</param>
+        /// <returns>List of Canvas modules</returns>
+        public async Task<List<CanvasCourseModule>> FetchModulesForCourse(string token, int id)
+        {
+            Uri endpoint = new Uri(domain + $"/api/courses/{id}/modules");
+
+            _client.DefaultRequestHeaders.Clear();
+            _client.DefaultRequestHeaders.Add("token", token);
+
+            HttpResponseMessage response = await _client.GetAsync(endpoint);
+
+            return JsonSerializer.Deserialize<List<CanvasCourseModule>>(response.Content.ReadAsStream());
         }
     }
 }

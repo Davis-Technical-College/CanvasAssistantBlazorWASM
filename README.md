@@ -1,18 +1,16 @@
 # Token Testing Blazor
 
-This is a Demo for Canvas Authentication using a Lean Blazor server and WASM.
+This application is designed to work as a help-mate to the Instructure Canvas Web Applicaton. It does require authentication through Canvas and Microsoft (Azure.) The functionality is currently extremely limited but eventually should include a number of helpful features to aid Canvas users at Davis Tech.
+
+## Design Notes
+
+This project has two parts, the Blazor Server and the Client. The server component provides access to Canvas API's (since client-side requests are blocked) through an internal API which can be called from the Client component.
+
 It uses an Azure CosmosDB instance to store credentials, meaning it also uses Microsoft Entra ID to Authenticate.
 
 This branch of the project includes code to refresh the access tokens, as well as tell when they expire.
 
 It also implements an actual log out feature, completing the authentication user experience.
-
-
-## About
-
-This project has two parts, the Blazor Server and the Client. Most of the work is done on the client, however
-server exposes a single API Endpoint which can be used to exchange the client authentication code for an access token, that way
-credentials are not ever accessed on the client, which would be insecure.
 
 ## Auth Flow
 

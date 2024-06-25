@@ -26,7 +26,7 @@ namespace TokenTestingBlazor.Controllers
         /// <param name="AzureToken">CosmosDB Access Token</param>
         /// <returns>Canvas Access Token</returns>
         [HttpGet("getToken")]
-        public async Task<ActionResult<ServerCanvasTokenDTO>> GetCanvasToken(string code)
+        public async Task<ActionResult<CanvasToken>> GetCanvasToken(string code)
         {
             if (string.IsNullOrEmpty(code))
             {
@@ -45,7 +45,7 @@ namespace TokenTestingBlazor.Controllers
         /// <param name="AzureToken">CosmosDB Access Token</param>
         /// <returns>Canvas Access Token</returns>
         [HttpGet("refreshToken")]
-        public async Task<ActionResult<ServerCanvasRefreshDTO>> RefreshCanvasToken([FromHeader] string? refresh_token)
+        public async Task<ActionResult<CanvasRefreshToken>> RefreshCanvasToken([FromHeader] string? refresh_token)
         {
             if (refresh_token == null)
             {

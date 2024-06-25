@@ -30,7 +30,7 @@ namespace TokenTestingBlazor.Util
         /// </summary>
         /// <param name="authCode">Authorization Code from canvas</param>
         /// <returns>A DTO containing the Canvas Access Token</returns>
-        public async Task<ServerCanvasTokenDTO> GetCanvasTokenAsync(string authCode)
+        public async Task<CanvasToken> GetCanvasTokenAsync(string authCode)
         {
             var endpoint = new Uri(_tokenURI);
 
@@ -50,7 +50,7 @@ namespace TokenTestingBlazor.Util
 
 
 
-            return JsonSerializer.Deserialize<ServerCanvasTokenDTO>(response.Content.ReadAsStream());
+            return JsonSerializer.Deserialize<CanvasToken>(response.Content.ReadAsStream());
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace TokenTestingBlazor.Util
         /// </summary>
         /// <param name="refreshToken">Canvas refresh token</param>
         /// <returns>Canvas refresh token</returns>
-        public async Task<ServerCanvasRefreshDTO> RefreshCanvasTokenAsync(string refreshToken)
+        public async Task<CanvasRefreshToken> RefreshCanvasTokenAsync(string refreshToken)
         {
             var endpoint = new Uri(_tokenURI);
 
@@ -76,7 +76,7 @@ namespace TokenTestingBlazor.Util
             var response = await _client.PostAsync(endpoint.ToString(), requestContent);
             response.EnsureSuccessStatusCode();
 
-            return JsonSerializer.Deserialize<ServerCanvasRefreshDTO>(response.Content.ReadAsStream());
+            return JsonSerializer.Deserialize<CanvasRefreshToken>(response.Content.ReadAsStream());
         }
 
         /// <summary>

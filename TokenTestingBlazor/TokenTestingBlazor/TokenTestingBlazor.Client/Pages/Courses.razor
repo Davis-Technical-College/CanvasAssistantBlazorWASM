@@ -10,11 +10,15 @@
 
 <TokenTestingBlazor.Client.Components.LoginHeader>
 
-    <h3>All Courses</h3>
+    <div class="p-4">
+        <h3>All Courses</h3>
+    </div>
 
-    @if (loading)
+    @if (token is null)
     {
-        <p>Loading...</p>
+        <div>
+            <p>You must be logged in to access this page.</p>
+        </div>
     }
     else if (courseList is null)
     {
@@ -22,64 +26,93 @@
     }
     else
     {
-        <div class="container">
-            <div class="row">
+        <div class="container-fluid">
+            <div class="row my-4">
                 <div class="col">
-                    <p>Selected Course</p>
-                    <p>@selectionName</p>
+                    <label for="selectedCourse" class="form-label">Selected Course</label>
+                    <input type="text" class="form-control" id="selectedCourse" disabled @bind="selectionName" />
+                </div>
+                <div class="col pt-4">
+                    <button class="btn btn-outline-dark" @onclick="HandleShowStudents">Show Students</button>
                 </div>
             </div>
 
-            <div>
+            <div class="my-4">
                 <h4>All Courses</h4>
             </div>
-            @if (courseList is not null)
+            @if (loadingCourses)
             {
-                <table class="table">
-                    <thead>
+                <div>
+                    <p>Loading...</p>
+                </div>
+            }
+            else if (courseList is not null)
+            {
+                <table class="table table-bordered">
+                    <thead class="table-dark">
                         <tr>
                             <th>Course Name</th>
                             <th>Course Id</th>
                             <th>Workflow State</th>
                             <th>Total Students</th>
+                            <th>Enrollment Type</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (CanvasCourseDTO course in courseList)
+                        @foreach (CanvasCourse course in courseList)
                         {
-                            <tr @onclick="() => SetCourseSelection(course.id, course.name)">
+                            <tr @onclick="() => HandleCourseSelection(course.id, course.name)">
                                 <td>@course.name</td>
                                 <td>@course.id</td>
                                 <td>@course.workflow_state</td>
                                 <td>@course.total_students</td>
+                                <td>@course.enrollments[0].type</td> @*Only shows the first enrollment type*@
                             </tr>
                         }
                     </tbody>
                 </table>
             }
+            else
+            {
+                <div>
+                    <p>Nothing to show</p>
+                </div>
+            }
 
-            <div>
+            <div class="my-4">
                 <h4>Students in Course</h4>
             </div>
-            @if (studentList is not null)
+            @if (loadingStudents)
             {
-                <table class="table">
-                    <thead>
+                <div>
+                    <p>Loading...</p>
+                </div>
+            }
+            else if (studentList is not null)
+            {
+                <table class="table table-bordered">
+                    <thead class="table-dark">
                         <tr>
                             <th>Student Name</th>
                             <th>Student Id</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (CanvasStudentDTO student in studentList)
+                        @foreach (CanvasStudent student in studentList)
                         {
                             <tr>
                                 <td>@student.name</td>
-                                <td>@student.student_id</td>
+                                <td>@student.sis_user_id</td>
                             </tr>
                         }
                     </tbody>
                 </table>
+            }
+            else
+            {
+                <div>
+                    <p>Nothing to show</p>
+                </div>
             }
         </div>
     }
@@ -87,19 +120,29 @@
 </TokenTestingBlazor.Client.Components.LoginHeader>
 
 @code {
-    private bool loading = false;
     private string? token;
-    private List<CanvasCourseDTO>? courseList;
     private int? selectionId;
     private string? selectionName;
 
-    private List<CanvasStudentDTO>? studentList;
+    private bool loadingCourses = false;
+    private List<CanvasCourse>? courseList;
 
-    private void SetCourseSelection(int id, string name)
+    private bool loadingStudents = false;
+    private List<CanvasStudent>? studentList;
+
+    private void HandleCourseSelection(int id, string name)
     {
         selectionId = id;
         selectionName = name;
         courseSelector.SetSelection(id, name);
+    }
+
+    private async Task HandleShowStudents()
+    {
+        if (selectionId is not null)
+        {
+            await FetchStudents((int)selectionId);
+        }
     }
 
     private async Task FetchAllCourses()
@@ -125,8 +168,6 @@
 
     private async Task FetchStudents(int id)
     {
-        token = await cookies.GetValueAsync<string>("canvas_access_token");
-
         if (token is null)
         {
             return;
@@ -146,12 +187,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        token = await cookies.GetValueAsync<string>("canvas_access_token");
         (selectionId, selectionName) = courseSelector.GetSelection();
         await FetchAllCourses();
-        if (selectionId is not null)
-        {
-            await FetchStudents((int)selectionId);
-        }
-        loading = false;
     }
 }

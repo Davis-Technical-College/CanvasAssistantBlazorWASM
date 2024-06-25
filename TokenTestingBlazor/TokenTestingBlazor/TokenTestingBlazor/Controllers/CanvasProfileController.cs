@@ -20,12 +20,12 @@ namespace TokenTestingBlazor.Controllers
         /// </summary>
         /// <param name="token">Canvas access token</param>
         /// <returns>Canvas user profile</returns>
-        public async Task<ActionResult<CanvasProfileDTO>> GetCanvasProfileAsync([FromHeader] string token)
+        public async Task<ActionResult<CanvasProfile>> GetCanvasProfileAsync([FromHeader] string token)
         {
             _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             var response = await _client.GetAsync(_endpoint);
             response.EnsureSuccessStatusCode();
-            return Ok(JsonSerializer.Deserialize<CanvasProfileDTO>(response.Content.ReadAsStream()));
+            return Ok(JsonSerializer.Deserialize<CanvasProfile>(response.Content.ReadAsStream()));
         }
 
     }

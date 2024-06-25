@@ -77,7 +77,7 @@ namespace TokenTestingBlazor.Client
         /// <param name="authCode">Code retrieved from the GetAuthCode method</param>
         /// <param name="state">Verification state returned by the callback url</param>
         /// <returns>A Task that resolves to the access token</returns>
-        public async Task<TokenDTO> GetAccessToken(string authCode, string state)
+        public async Task<Token> GetAccessToken(string authCode, string state)
         {
             var endpoint = new Uri($"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token");
 
@@ -95,11 +95,11 @@ namespace TokenTestingBlazor.Client
             var response = await client.PostAsync(endpoint.ToString(), requestContent);
             response.EnsureSuccessStatusCode();
 
-            return JsonSerializer.Deserialize<TokenDTO>(response.Content.ReadAsStream());
+            return JsonSerializer.Deserialize<Token>(response.Content.ReadAsStream());
 
         }
 
-        public async Task<TokenDTO> RefreshAccessToken(string refreshToken)
+        public async Task<Token> RefreshAccessToken(string refreshToken)
         {
             var endpoint = new Uri($"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token");
 
@@ -116,7 +116,7 @@ namespace TokenTestingBlazor.Client
             var response = await client.PostAsync(endpoint.ToString(), requestContent);
             response.EnsureSuccessStatusCode();
 
-            return JsonSerializer.Deserialize<TokenDTO>(response.Content.ReadAsStream());
+            return JsonSerializer.Deserialize<Token>(response.Content.ReadAsStream());
         }
 
         /// <summary>

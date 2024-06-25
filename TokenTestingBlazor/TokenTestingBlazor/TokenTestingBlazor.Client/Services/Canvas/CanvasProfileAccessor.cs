@@ -24,7 +24,7 @@ namespace TokenTestingBlazor.Client
         /// </summary>
         /// <param name="token">Canvas access token</param>
         /// <returns>Canvas user profile</returns>
-        public async Task<CanvasProfileDTO> GetCanvasProfileAsync(string token)
+        public async Task<CanvasProfile> GetCanvasProfileAsync(string token)
         {
             var apiEndpoint = domain + "/api/profile";
 
@@ -33,7 +33,7 @@ namespace TokenTestingBlazor.Client
 
             var response = await _client.GetAsync(apiEndpoint);
 
-            return JsonSerializer.Deserialize<CanvasProfileDTO>(response.Content.ReadAsStream());
+            return JsonSerializer.Deserialize<CanvasProfile>(response.Content.ReadAsStream());
         }
     }
 }
