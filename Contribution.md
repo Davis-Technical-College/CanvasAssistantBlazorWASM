@@ -2,6 +2,18 @@
 
 This page contains details on how to add new pages to the project, as well as specifics for components and services.
 
+## Contribution Notes
+
+There's a good chance we can optimize the server components to help save resources, so please don't hesitate to refactor heavily. For example, we may want to reduce the number of HttpClient instances created.
+
+The model classes are very barebones at the moment, we have a lot of properties that could stll be added.
+
+## GraphQL Notes
+
+The Canvas GraphQL endpoint does work, but I was not able to fetch data from this app. There's a high likelyhood I made some simple mistakes so I've included the logic I used in the code comments. Be warned that GraphQL will return a 200 response code if the error is GraphQL related (rather than HTTP related.)
+
+If you'd like to explore GraphQL I recommend using a client such as Banana Cake Pop or (my favorite) Insomnium. You should be able to view the GraphQL schema (extremely helpful!) once authenticated.
+
 ## The design philosophy
 
 This project is designed to have as lean of a server as possible, meaning if it can be done on the client, it should be. Due to restrictions in the Canvas API we are forced (or so we believe) to make Canvas API calls from the server.
@@ -33,11 +45,20 @@ This component ensures that before rendering the page content, there is an Acces
 
 # API Endpoints
 
+The logic for these endpoints lives in the Controller classes.
+
 The server exposes three API endpoints for use with Canvas Authentication (They are pretty self-explanitory)
 
 - `api/auth/getToken`
 - `api/auth/refreshToken`
 - `api/auth/canvasLogout`
+
+For Canvas API access
+
+- `api/courses`
+- `api/courses/{id}/students`
+- `api/courses/{id}/assignments`
+- `api/courses/{id}/modules`
 
 # Services
 

@@ -73,5 +73,38 @@ namespace TokenTestingBlazor.Controllers
             response.EnsureSuccessStatusCode();
             return Ok(JsonSerializer.Deserialize<List<CanvasCourseModule>>(response.Content.ReadAsStream()));
         }
+
+
+        // GRAPHQL LOGIC
+        // DOES NOT CURRENTLY WORK
+
+        //public async Task<ActionResult> GetAllCoursesAsync([FromHeader] string token)
+        //{
+        //    GraphQLRequest gql = new GraphQLRequest
+        //    {
+        //        query = "query GetAllCourses {\n\tallCourses {\n\t\tid\n\t\tname\n\t}\n}",
+        //        operationName = "getAllCourses",
+        //        variables = null
+        //    };
+
+        //    StringContent json = new(JsonSerializer.Serialize(gql), new MediaTypeHeaderValue("application/graphql"));
+
+        //    Console.WriteLine(await json.ReadAsStringAsync());
+
+        //    _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+        //    HttpResponseMessage response = await _client.PostAsync(_endpoint, json);
+
+        //    // Only ensures valid HTTP request/response, does not check for GraphQL errors
+        //    response.EnsureSuccessStatusCode();
+        //    Console.WriteLine("Status code: " + response.StatusCode);
+
+        //    var resJson = await response.Content.ReadAsStringAsync();
+        //    Console.WriteLine();
+        //    Console.WriteLine("Response: " + resJson);
+
+        //    //WARNING: This will break if we get a GraphQL error (200 response but the body just contains an error)
+        //    return Ok(JsonSerializer.Deserialize<List<ServerCanvasCourseDTO>>(response.Content.ReadAsStream()));
+        //}
     }
 }
