@@ -3,7 +3,7 @@
     /// <summary>
     /// Data transfer object for a Canvas User
     /// </summary>
-    public class ServerCanvasUserDTO
+    public class CanvasUser
     {
         public int id { get; set; }
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

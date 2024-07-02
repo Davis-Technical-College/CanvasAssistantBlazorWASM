@@ -1,5 +1,5 @@
-using TokenTestingBlazor;
 using TokenTestingBlazor.Components;
+using TokenTestingBlazor.Util;
 
 var builder = WebApplication.CreateBuilder(args);
 

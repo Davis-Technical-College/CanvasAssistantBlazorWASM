@@ -1,12 +1,62 @@
 ﻿@page "/"
+@using TokenTestingBlazor.Client.Models
 @rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject HttpClient http
+@inject CookieStorageAccessor cookies
+@inject CanvasProfileAccessor profile
 
 @*Home page, uses the LoginHeader component to show the login bar*@
 <PageTitle>Home</PageTitle>
 
 <TokenTestingBlazor.Client.Components.LoginHeader>
 
-<h1 class="test">Canvas Assistant</h1>
+    @if (loading)
+    {
+        <p>Loading...</p>
+    }
+    else if (token is null || profileDTO is null)
+    {
+        <h1>Canvas Assistant</h1>
+
+        <h4>Now in Blazor!</h4>
+    }
+    else
+    {
+        <h1>@($"Welcome, {profileDTO.name}!")</h1>
+
+        <p>@($"User ID: {profileDTO.login_id}")</p>
+    }
 
 
 </TokenTestingBlazor.Client.Components.LoginHeader>
+
+@code {
+    private bool loading = true;
+    private string? token = null;
+    private CanvasProfile? profileDTO = null;
+
+    private async Task FetchProfile()
+    {
+        token = await cookies.GetValueAsync<string>("canvas_access_token");
+
+        if (token != null)
+        {
+            try
+            {
+                profileDTO = await profile.GetCanvasProfileAsync(token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error fetching profile");
+                Console.WriteLine(ex);
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchProfile();
+        loading = false;
+    }
+}

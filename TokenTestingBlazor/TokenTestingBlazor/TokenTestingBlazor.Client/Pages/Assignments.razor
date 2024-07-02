@@ -1,0 +1,111 @@
+﻿@page "/assignments"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject CookieStorageAccessor cookies
+@inject CanvasCourseAccessor coursesAPI
+@inject CourseSelector courseSelector
+
+<PageTitle>Assignments</PageTitle>
+
+<TokenTestingBlazor.Client.Components.LoginHeader>
+
+    <div class="p-4">
+        <h3>Assignments</h3>
+    </div>
+
+    @if (token is null)
+    {
+        <div>
+            <p>You need to be logged in to access this page.</p>
+        </div>
+    }
+    else
+    {
+        <div class="container-fluid">
+            <div class="row my-4">
+                <div class="col">
+                    <label for="selectedCourse" class="form-label">Selected Course</label>
+                    <input type="text" class="form-control" id="selectedCourse" disabled @bind="selectionName" />
+                </div>
+                <div class="col pt-4">
+                    <button class="btn btn-outline-dark" @onclick="ShowAllAssignmentsHandler">Show All Assignments</button>
+                </div>
+            </div>
+
+            <div class="my-4">
+                <h4>All Assignments</h4>
+            </div>
+            @if (loadingAssignments)
+            {
+                <div>
+                    <p>Loading...</p>
+                </div>                
+            }
+            else if (assignmentList is not null)
+            {
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Assignment Name</th>
+                            <th>Assignment Id</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (CanvasAssignment assignment in assignmentList)
+                        {
+                            <tr>
+                                <td>@assignment.name</td>
+                                <td>@assignment.id</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            }
+            else
+            {
+                <div>
+                    <p>Nothing to display</p>
+                </div>
+            }
+        </div>
+    }
+
+</TokenTestingBlazor.Client.Components.LoginHeader>
+
+@code {
+    private string? token = null;
+    private int? selectionId = null;
+    private string? selectionName = null;
+
+    private bool loadingAssignments = false;
+    private List<CanvasAssignment>? assignmentList = null;
+
+    private async Task ShowAllAssignmentsHandler()
+    {
+        if (token is not null && selectionId is not null)
+        {
+            loadingAssignments = true;
+            try
+            {
+                assignmentList = await coursesAPI.FetchAssignmentsForCourse(token, (int)selectionId);
+                loadingAssignments = false;
+            }
+            catch (Exception ex)
+            {
+                loadingAssignments = false;
+                Console.WriteLine(ex.Message);
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await cookies.GetValueAsync<string>("canvas_access_token");
+
+        if (token is not null)
+        {
+            (selectionId, selectionName) = courseSelector.GetSelection();
+        }
+    }
+}
