@@ -12,7 +12,7 @@ The model classes are very barebones at the moment, we have a lot of properties 
 
 The Canvas GraphQL endpoint does work, but I was not able to fetch data from this app. There's a high likelyhood I made some simple mistakes so I've included the logic I used in the code comments. Be warned that GraphQL will return a 200 response code if the error is GraphQL related (rather than HTTP related.)
 
-If you'd like to explore GraphQL I recommend using a client such as Banana Cake Pop or (my favorite) Insomnium. You should be able to view the GraphQL schema (extremely helpful!) once authenticated.
+If you'd like to explore GraphQL I recommend using a client such as Banana Cake Pop or Insomnium (my favorite). You should be able to view the GraphQL schema (extremely helpful!) once authenticated.
 
 ## The design philosophy
 
@@ -118,3 +118,14 @@ A class used to interact with cookies.
     - Creates a cookie with value of type `T` with specified key, expiring in the specified number of seconds
 - DeleteValueAsync
     - Deletes a cookie with the specified key
+
+## CourseSelector.cs (Client)
+
+Utility class for getting and setting a course selection. This should be accessible from any part of the client application.
+
+#### Methods
+
+- SetSelection
+    - Sets the selected course. Requires a course id and name.
+- GetSelection
+    - Returns the selected course id and name (int, string), or (null, null).
