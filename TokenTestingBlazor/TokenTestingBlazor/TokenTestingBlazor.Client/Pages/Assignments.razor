@@ -7,7 +7,15 @@
 
 <PageTitle>Assignments</PageTitle>
 
-<TokenTestingBlazor.Client.Components.LoginHeader>
+@if (pageLoading)
+{
+    <div>
+        <p>Loading...</p>
+    </div>
+}
+else
+{
+    <NavBar LoggedIn="@(token is null ? false : true)" />
 
     <div class="p-4">
         <h3>Assignments</h3>
@@ -39,7 +47,7 @@
             {
                 <div>
                     <p>Loading...</p>
-                </div>                
+                </div>
             }
             else if (assignmentList is not null)
             {
@@ -70,13 +78,13 @@
             }
         </div>
     }
-
-</TokenTestingBlazor.Client.Components.LoginHeader>
+}
 
 @code {
     private string? token = null;
     private int? selectionId = null;
     private string? selectionName = null;
+    private bool pageLoading = true;
 
     private bool loadingAssignments = false;
     private List<CanvasAssignment>? assignmentList = null;
@@ -107,5 +115,7 @@
         {
             (selectionId, selectionName) = courseSelector.GetSelection();
         }
+
+        pageLoading = false;
     }
 }

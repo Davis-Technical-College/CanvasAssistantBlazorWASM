@@ -8,10 +8,18 @@
 
 <PageTitle>Courses</PageTitle>
 
-<TokenTestingBlazor.Client.Components.LoginHeader>
+@if (pageLoading)
+{
+    <div>
+        <p>Loading...</p>
+    </div>
+}
+else
+{
+    <NavBar LoggedIn="@(token is null ? false : true)" />
 
     <div class="p-4">
-        <h3>All Courses</h3>
+        <h3>Courses</h3>
     </div>
 
     @if (token is null)
@@ -22,7 +30,9 @@
     }
     else if (courseList is null)
     {
-        <p>Nothing to display...</p>
+        <div>
+            <p>Nothing to display...</p>
+        </div>
     }
     else
     {
@@ -51,6 +61,7 @@
                 <table class="table table-bordered">
                     <thead class="table-dark">
                         <tr>
+                            <th></th>
                             <th>Course Name</th>
                             <th>Course Id</th>
                             <th>Workflow State</th>
@@ -61,7 +72,10 @@
                     <tbody>
                         @foreach (CanvasCourse course in courseList)
                         {
-                            <tr @onclick="() => HandleCourseSelection(course.id, course.name)">
+                            <tr>
+                                <td>
+                                    <button class="btn btn-secondary" @onclick="() => HandleCourseSelection(course.id, course.name)">Select</button>
+                                </td>
                                 <td>@course.name</td>
                                 <td>@course.id</td>
                                 <td>@course.workflow_state</td>
@@ -116,13 +130,13 @@
             }
         </div>
     }
-
-</TokenTestingBlazor.Client.Components.LoginHeader>
+}
 
 @code {
     private string? token;
     private int? selectionId;
     private string? selectionName;
+    private bool pageLoading = true;
 
     private bool loadingCourses = false;
     private List<CanvasCourse>? courseList;
@@ -190,5 +204,6 @@
         token = await cookies.GetValueAsync<string>("canvas_access_token");
         (selectionId, selectionName) = courseSelector.GetSelection();
         await FetchAllCourses();
+        pageLoading = false;
     }
 }
