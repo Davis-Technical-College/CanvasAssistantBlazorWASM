@@ -25,7 +25,6 @@ namespace TokenTestingBlazor.Controllers
             _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             HttpResponseMessage response = await _client.GetAsync(_endpoint + "courses?include[]=total_students");
             response.EnsureSuccessStatusCode();
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
             return Ok(JsonSerializer.Deserialize<List<CanvasCourse>>(response.Content.ReadAsStream()));
         }
 

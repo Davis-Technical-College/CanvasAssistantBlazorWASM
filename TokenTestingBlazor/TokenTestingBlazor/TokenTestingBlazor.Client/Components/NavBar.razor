@@ -2,7 +2,7 @@
 
 @inject CookieStorageAccessor cookies
 
-<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Canvas Assistant</a>
         <button class="navbar-toggler @NavButtonCssClass" type="button" aria-controls="navbarCollapse"
@@ -18,6 +18,11 @@
                 </li>
                 @if (LoggedIn)
                 {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="queue">
+                            <span class="oi oi-clipboard" aria-hidden="true"></span> Grading Queue
+                        </NavLink>
+                    </li>
                     <li class="nav-item">
                         <NavLink class="nav-link" href="courses">
                             <span class="oi oi-list" aria-hidden="true"></span> Courses
