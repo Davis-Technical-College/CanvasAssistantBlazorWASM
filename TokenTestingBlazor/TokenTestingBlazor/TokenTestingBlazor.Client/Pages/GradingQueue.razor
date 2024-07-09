@@ -1,0 +1,30 @@
+﻿@page "/grading"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject CookieStorageAccessor cookies
+
+@if (pageLoading)
+{
+    <div>
+        <p>Loading...</p>
+    </div>
+}
+else
+{
+    <NavBar LoggedIn="@(token is null ? false : true)" />
+
+    <h3>Grading Queue</h3>
+
+    <p>Coming soon...</p>
+}
+
+@code {
+    private string? token;
+    private bool pageLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await cookies.GetValueAsync<string>("canvas_access_token");
+        pageLoading = false;
+    }
+}

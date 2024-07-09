@@ -5,8 +5,17 @@
 @inject CanvasCourseAccessor coursesAPI
 @inject CourseSelector courseSelector
 
+<PageTitle>Modules</PageTitle>
 
-<TokenTestingBlazor.Client.Components.LoginHeader>
+@if (pageLoading)
+{
+    <div>
+        <p>Loading...</p>
+    </div>
+}
+else
+{
+    <NavBar LoggedIn="@(token is null ? false : true)" />
 
     <div class="p-4">
         <h3>Modules</h3>
@@ -70,13 +79,13 @@
             }
         </div>
     }
-
-</TokenTestingBlazor.Client.Components.LoginHeader>
+}
 
 @code {
     private string? token = null;
     private int? selectionId = null;
     private string? selectionName = null;
+    private bool pageLoading = true;
 
     private bool loadingModules = false;
     private List<CanvasCourseModule>? moduleList = null;
@@ -107,5 +116,7 @@
         {
             (selectionId, selectionName) = courseSelector.GetSelection();
         }
+
+        pageLoading = false;
     }
 }

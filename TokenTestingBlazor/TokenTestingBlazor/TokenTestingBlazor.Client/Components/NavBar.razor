@@ -1,0 +1,68 @@
+﻿@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject CookieStorageAccessor cookies
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Canvas Assistant</a>
+        <button class="navbar-toggler @NavButtonCssClass" type="button" aria-controls="navbarCollapse"
+                aria-label="Toggle navigation" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse @NavBarCssClass" id="navbarCollapse" @onclick="ToggleNavMenu">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        Home
+                    </NavLink>
+                </li>
+                @if (LoggedIn)
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="grading">
+                            Grading Queue
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="courses">
+                            Courses
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="assignments">
+                            Assignments
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="modules">
+                            Modules
+                        </NavLink>
+                    </li>
+                }
+            </ul>
+            @if (LoggedIn)
+            {
+                <a class="btn btn-outline-secondary" role="button" href="logout">Logout</a>
+            }
+            else
+            {
+                <a class="btn btn-outline-secondary" role="button" href="login">Login</a>
+            }
+        </div>
+    </div>
+</nav>
+
+
+@code {
+    [Parameter]
+    public bool LoggedIn { get; set; }
+
+    private bool collapseNavMenu = true;
+    private string? NavBarCssClass => collapseNavMenu ? null : "show";
+    private string? NavButtonCssClass => collapseNavMenu ? "collapsed" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

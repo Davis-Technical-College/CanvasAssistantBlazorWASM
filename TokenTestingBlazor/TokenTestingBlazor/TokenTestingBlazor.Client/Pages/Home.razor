@@ -6,16 +6,20 @@
 @inject CookieStorageAccessor cookies
 @inject CanvasProfileAccessor profile
 
-@*Home page, uses the LoginHeader component to show the login bar*@
-<PageTitle>Home</PageTitle>
+<PageTitle>Canvas Assistant</PageTitle>
 
-<TokenTestingBlazor.Client.Components.LoginHeader>
 
-    @if (loading)
-    {
+@if (pageLoading)
+{
+    <div>
         <p>Loading...</p>
-    }
-    else if (token is null || profileDTO is null)
+    </div>
+}
+else
+{
+    <NavBar LoggedIn="@(token is null ? false : true)" />
+
+    @if (token is null || profileDTO is null)
     {
         <h1>Canvas Assistant</h1>
 
@@ -27,12 +31,10 @@
 
         <p>@($"User ID: {profileDTO.login_id}")</p>
     }
-
-
-</TokenTestingBlazor.Client.Components.LoginHeader>
+}
 
 @code {
-    private bool loading = true;
+    private bool pageLoading = true;
     private string? token = null;
     private CanvasProfile? profileDTO = null;
 
@@ -57,6 +59,6 @@
     protected override async Task OnInitializedAsync()
     {
         await FetchProfile();
-        loading = false;
+        pageLoading = false;
     }
 }
