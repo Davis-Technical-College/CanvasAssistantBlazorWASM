@@ -4,7 +4,12 @@ This application is designed to work as a help-mate to the Instructure Canvas We
 
 ## Design Notes
 
-This project has two parts, the Blazor Server and the Client. The server component provides access to Canvas API's (since client-side requests are blocked) through an internal API which can be called from the Client component.
+This project has two parts:
+
++ The Blazor Server
++ The Blazor Client
+
+The server component provides access to Canvas API's (since client-side requests are blocked) through an internal API which can be called from the Client component.
 
 It uses an Azure CosmosDB instance to store credentials, meaning it also uses Microsoft Entra ID to Authenticate.
 
@@ -14,7 +19,7 @@ It also implements an actual log out feature, completing the authentication user
 
 ## Auth Flow
 
-When initializing the authorization flow by hitting "Login", the client directs the user to the Microsoft Login Page, 
+When initializing the authorization flow by hitting "Login" the client directs the user to the Microsoft Login Page 
 where they login using Microsoft Entra ID. From there they are redirected back to the WASM which exchanges the auth code for an Azure Active Directory Access Token.
 After that the user is once again redirected to the Canvas login, where they grant permission for the application to access their account, redirecting to the WASM with an authentication code.
 The client then makes a call to the Blazor server with the auth code, while the server accesses the CosmosDB instance to get the Canvas OAuth Client Secret which is used to exchange said auth code for
@@ -31,7 +36,7 @@ If a page doesn't use the `<Auth />` component, make sure to use the `<LoginHead
 
 To get this project working see [Azure Setup](AzureSetup.md) and [Project Configuration](Configuration.md)
 
-##Public Website
+## Public Website
 https://canvas-assistant-blazor-wasm.azurewebsites.net/
 
 ## Contribution
