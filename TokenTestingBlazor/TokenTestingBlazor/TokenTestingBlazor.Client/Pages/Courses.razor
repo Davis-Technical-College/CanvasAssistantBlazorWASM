@@ -56,6 +56,8 @@ else
             }
             else if (courseList is not null)
             {
+                var paginatedCourseList = courseList.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage).ToList();
+
                 <table class="table table-bordered">
                     <thead class="table-dark">
                         <tr>
@@ -68,7 +70,7 @@ else
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (CanvasCourse course in courseList)
+                        @foreach (CanvasCourse course in paginatedCourseList)
                         {
                             <tr>
                                 <td>
@@ -83,6 +85,22 @@ else
                         }
                     </tbody>
                 </table>
+                <div class="d-flex flex-column align-items-center my-4">
+                    <div class="d-flex justify-content-between" style="width: 200px;">
+                        <button class="btn btn-secondary w-50 me-2" @onclick="PrevPage" disabled="@(currentPage == 1)">
+                            Previous
+                        </button>
+                        <button class="btn btn-secondary w-50" @onclick="NextPage" disabled="@(currentPage == totalPages)">
+                            Next
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <span>Page @currentPage of @totalPages</span>
+                    </div>
+                </div>
+
+
+
             }
             else
             {
@@ -136,6 +154,13 @@ else
 }
 
 @code {
+
+    //pagnation
+    private int currentPage = 1;
+    private int itemsPerPage = 5;
+    private int totalPages => (int)Math.Ceiling((double)(courseList?.Count() ?? 0) / itemsPerPage);
+
+
     private string? token;
     private int? selectionId;
     private string? selectionName;
@@ -152,6 +177,24 @@ else
         selectionId = id;
         selectionName = name;
         courseSelector.SetSelection(id, name);
+    }
+
+    //go to previous page
+    private void PrevPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
+    }
+
+    //go to next page
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+        }
     }
 
     private async Task HandleShowStudents()
