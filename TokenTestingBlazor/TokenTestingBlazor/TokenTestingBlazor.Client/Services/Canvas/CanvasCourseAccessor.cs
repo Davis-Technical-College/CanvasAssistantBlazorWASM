@@ -19,21 +19,32 @@ namespace TokenTestingBlazor.Client
         }
 
         /// <summary>
-        /// Fetches all courses from the server API.
+        /// Fetches courses from the server API with pagination support.
         /// </summary>
         /// <param name="token">Canvas access token</param>
+        /// <param name="pageNumber">Current page number</param>
+        /// <param name="itemsPerPage">Number of items per page</param>
         /// <returns>List of Canvas courses</returns>
-        public async Task<List<CanvasCourse>> FetchAllCourses(string token)
+        public async Task<List<CanvasCourse>> FetchAllCourses(string token, int pageNumber, int itemsPerPage)
         {
-            Uri apiEndpoint = new Uri(domain + "/api/courses");
+            Uri apiEndpoint = new Uri(domain + $"/api/courses?page={pageNumber}&perPage={itemsPerPage}");
 
             _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("token", token);
 
             HttpResponseMessage response = await _client.GetAsync(apiEndpoint);
 
-            return JsonSerializer.Deserialize<List<CanvasCourse>>(response.Content.ReadAsStream());
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                return JsonSerializer.Deserialize<List<CanvasCourse>>(response.Content.ReadAsStream());
+            }
+            else
+            {
+                // Handle non-successful response (e.g., log error, throw exception, etc.)
+                return new List<CanvasCourse>();
+            }
         }
+
 
         /// <summary>
         /// Fetches all students for a course.
