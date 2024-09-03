@@ -180,22 +180,24 @@ else
     }
 
     //go to previous page
-    private void PrevPage()
+    private async Task PrevPage()
     {
         if (currentPage > 1)
         {
             currentPage--;
+            await FetchAllCourses(currentPage, itemsPerPage);
         }
     }
 
-    //go to next page
-    private void NextPage()
+    private async Task NextPage()
     {
         if (currentPage < totalPages)
         {
             currentPage++;
+            await FetchAllCourses(currentPage, itemsPerPage);
         }
     }
+
 
     private async Task HandleShowStudents()
     {
@@ -205,7 +207,7 @@ else
         }
     }
 
-    private async Task FetchAllCourses()
+    private async Task FetchAllCourses(int pageNumber, int itemsPerPage)
     {
         token = await cookies.GetValueAsync<string>("canvas_access_token");
 
@@ -217,7 +219,8 @@ else
         {
             try
             {
-                courseList = await coursesAPI.FetchAllCourses(token);
+                // Modify your API accessor to accept pageNumber and itemsPerPage
+                courseList = await coursesAPI.FetchAllCourses(token, pageNumber, itemsPerPage);
             }
             catch (Exception ex)
             {
@@ -225,6 +228,7 @@ else
             }
         }
     }
+
 
     private async Task FetchStudents(int id)
     {
@@ -246,10 +250,11 @@ else
     }
 
     protected override async Task OnInitializedAsync()
-    {
-        token = await cookies.GetValueAsync<string>("canvas_access_token");
-        (selectionId, selectionName) = courseSelector.GetSelection();
-        await FetchAllCourses();
-        pageLoading = false;
-    }
+{
+    token = await cookies.GetValueAsync<string>("canvas_access_token");
+    (selectionId, selectionName) = courseSelector.GetSelection();
+    await FetchAllCourses(currentPage, itemsPerPage); // Updated to include pagination parameters
+    pageLoading = false;
+}
+
 }
