@@ -179,7 +179,7 @@ else
         courseSelector.SetSelection(id, name);
     }
 
-    //go to previous page
+
     private async Task PrevPage()
     {
         if (currentPage > 1)
@@ -219,7 +219,6 @@ else
         {
             try
             {
-                // Modify your API accessor to accept pageNumber and itemsPerPage
                 courseList = await coursesAPI.FetchAllCourses(token, pageNumber, itemsPerPage);
             }
             catch (Exception ex)

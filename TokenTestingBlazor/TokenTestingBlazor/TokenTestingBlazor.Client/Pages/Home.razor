@@ -21,15 +21,19 @@ else
 
     @if (token is null || profileDTO is null)
     {
-        <h1>Canvas Assistant</h1>
+        <div class="p-4">
+            <h1>Canvas Assistant</h1>
 
-        <h4>Now in Blazor!</h4>
+            <h4>Now in Blazor!</h4>
+        </div>
     }
     else
     {
-        <h1>@($"Welcome, {profileDTO.name}!")</h1>
+        <div class="p-4">
+            <h1>@($"Welcome, {profileDTO.name}!")</h1>
 
-        <p>@($"User ID: {profileDTO.login_id}")</p>
+            <p>@($"User ID: {profileDTO.login_id}")</p>
+        </div>
     }
 }
 
