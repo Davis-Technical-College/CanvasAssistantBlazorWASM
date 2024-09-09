@@ -1,0 +1,59 @@
+﻿@page "/help"
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+
+@inject CookieStorageAccessor cookies
+
+@if (pageLoading)
+{
+    <div>
+        <p>Loading...</p>
+    </div>
+}
+else
+{
+    <NavBar LoggedIn="@(token is null ? false : true)" />
+
+    <div class="p-4">
+        <h3>Help Page</h3>
+    </div>
+
+    @if (token is null)
+    {
+        <div class="p-4">
+            <p>You must be logged in to access this page.</p>
+        </div>
+    }
+    else
+    {
+        <div class ="p-4">
+            <p>This will be where you can see version history and release notes.</p>
+
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Version Number</th>
+                        <th>Release Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+
+@code {
+    private string? token;
+    private bool pageLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await cookies.GetValueAsync<string>("canvas_access_token");
+        pageLoading = false;
+    }
+}
