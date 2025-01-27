@@ -1,3 +1,11 @@
 ﻿h1 {
     color: black;
 }
+
+.homeWrapper {
+    width: 80%;
+    margin: auto;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #A93238; 
+}
