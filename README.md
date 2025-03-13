@@ -1,6 +1,6 @@
 # Token Testing Blazor
 
-This application is designed to work as a help-mate to the Instructure Canvas Web Applicaton. It does require authentication through Canvas and Microsoft (Azure.) The functionality is currently extremely limited but eventually should include a number of helpful features to aid Canvas users at Davis Tech.
+This application is designed to work as a help-mate to the Instructure Canvas Web Applicaton. It does require authentication through Canvas and Microsoft (Azure.) The functionality is currently extremely limited but eventually should include a number of helpful features to aid Canvas instructors at Davis Tech.
 
 ## Design Notes
 
@@ -15,7 +15,7 @@ It uses an Azure CosmosDB instance to store credentials, meaning it also uses Mi
 
 This branch of the project includes code to refresh the access tokens, as well as tell when they expire.
 
-It also implements an actual log out feature, completing the authentication user experience.
+It also implements an actual logout feature, completing the authentication user experience.
 
 ## Auth Flow
 
